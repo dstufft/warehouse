@@ -139,6 +139,8 @@ gulp.task("clean:images", function() { return del([dstPaths.images]) });
 
 gulp.task("clean:js", function() { return del([dstPaths.js]) });
 
+gulp.task("clean:maps", function() { return del([dstPaths.maps]) });
+
 gulp.task("clean:manifest", function() {
   return del([path.join(dstPaths.base, "manifest.json")]);
 });
@@ -148,7 +150,8 @@ gulp.task("clean", [
   "clean:css",
   "clean:images",
   "clean:js",
-  "clean:manifest"
+  "clean:manifest",
+  "clean:maps"
 ]);
 
 gulp.task("watch", ["dist"], function() {

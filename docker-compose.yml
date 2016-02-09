@@ -37,6 +37,8 @@ app:
     CAMO_URL: "{request.scheme}://{request.domain}:9000/"
     CAMO_KEY: "insecure camo key"
     DOCS_URL: "https://pythonhosted.org/{project}/"
+    GOOGLE_CREDENTIALS: /app/PyPI-1a3ca5157b43.json
+    GOOGLE_PROJECT: long-stack-762
     FILES_BACKEND: "warehouse.packaging.services.LocalFileStorage path=/app/data/packages/"
 
 web:
@@ -56,7 +58,7 @@ web:
 worker:
   extends:
     service: app
-  command: celery -A warehouse worker -l info --autoreload
+  command: celery -A warehouse worker -c 4 -l info --autoreload
   links:
     - db
     - redis

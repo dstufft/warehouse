@@ -12,13 +12,19 @@
     "jquery": "2.1.4",
     "font-awesome": "4.4.0",
     "jquery-timeago": "1.4.3",
-    "l20n": "3.4.1"
+    "l20n": "3.4.1",
+    "jquery-ajax-retry": "0.2.7"
   },
   "overrides": {
     "font-awesome": {
       "main": [
         "css/font-awesome.css",
         "fonts/*"
+      ]
+    },
+    "jquery-ajax-retry": {
+      "main": [
+        "dist/jquery.ajax-retry.js"
       ]
     },
     "l20n": {

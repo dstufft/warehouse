@@ -241,21 +241,9 @@
         <a class="-js-vertical-tab-accordion-heading vertical-tab-accordion-heading" rel="tab4" {{ l20n("projectDownloadStats") }}>Download Statistics</a>
         <div id="tab4" class="js-vertical-tab-content vertical-tab-content">
           <h2 {{ l20n("projectDownloadStats") }}>Download Statistics</h2>
-          <div class="button-set">
-            <a class="wh-button -highlight" href="#" {{ l20n("allVersions") }}>All versions</a>
-            <a class="wh-button" href="#" {{ l20n("thisVersionOnly", version=release.version) }}>This version only ({{ release.version }})</a>
-          </div>
 
-          <div class="download-graph">
-            <div class="download-overview">
-              <p><strong>TODO:</strong> All of these numbers</p>
-              <p><strong>Today:</strong> 34</p>
-              <p><strong>This Week:</strong> 54</p>
-              <p><strong>This Month: </strong> 5,434</p>
-              <p><strong>This Year: </strong> 46,339</p>
-              <p><strong>All Time:</strong> 2,342,323</p>
-            </div>
-            <p>TODO: Bar chart here showing downloads over time</p>
+          <div class="-js-stats-pane" data-url="{{ request.route_path('internal.project-stats', name=release.project.normalized_name, version=release.version) }}">
+            TODO: Insert loading spinner.
           </div>
         </div>
 

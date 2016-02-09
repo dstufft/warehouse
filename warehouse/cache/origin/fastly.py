@@ -24,7 +24,12 @@ class UnsuccessfulPurge(Exception):
     pass
 
 
-@celery.task(bind=True, ignore_result=True, acks_late=True)
+@celery.task(
+    bind=True,
+    pyramid_request=True,
+    ignore_result=True,
+    acks_late=True,
+)
 def purge_key(task, request, key):
     cacher = request.find_service(IOriginCache)
     try:

@@ -74,4 +74,24 @@ $(document).ready(function() {
   // });
   $(".-js-relative-time").timeago();  // Add back to document.l10n.ready
 
+  // Load the stats pane
+  $(".-js-stats-pane").each(function() {
+    var url = $(this).data('url');
+    var toReplace = $(this);
+
+    function fetchStats() {
+      $.ajax( url )
+       .done(function(data, textStatus, jqXHR) {
+         if (jqXHR.status == 202) {
+            setTimeout(fetchStats, 1000);
+         } else if (jqXHR.status == 200) {
+            toReplace.html(data);
+         }
+       });
+    }
+
+    fetchStats();
+
+  });
+
 });

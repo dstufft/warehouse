@@ -11,7 +11,7 @@
 # limitations under the License.
 
 from warehouse.packaging.interfaces import IDownloadStatService, IFileStorage
-from warehouse.packaging.services import RedisDownloadStatService
+from warehouse.packaging.services import BigQueryDownloadStatService
 from warehouse.packaging.models import Project, Release
 
 
@@ -25,12 +25,17 @@ def includeme(config):
 
     # Register our service which will handle get the download statistics for
     # a project.
-    config.register_service(
-        RedisDownloadStatService(
-            config.registry.settings["download_stats.url"],
-        ),
+    config.register_service_factory(
+        BigQueryDownloadStatService.create_service,
         IDownloadStatService,
     )
+
+    # config.register_service(
+    #     RedisDownloadStatService(
+    #         config.registry.settings["download_stats.url"],
+    #     ),
+    #     IDownloadStatService,
+    # )
 
     # Register our origin cache keys
     config.register_origin_cache_keys(

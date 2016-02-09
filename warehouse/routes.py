@@ -29,6 +29,16 @@ def includeme(config):
         read_only=True,
     )
 
+    # Internal API Routes, Ideally these will get moved to a public API once
+    # we have one.
+    config.add_route(
+        "internal.project-stats",
+        "/_internal/project-stats/{name}/{version}/",
+        factory="warehouse.packaging.models:ProjectFactory",
+        traverse="/{name}/{version}",
+        read_only=True,
+    )
+
     # Search Routes
     config.add_route("search", "/search/", read_only=True)
 

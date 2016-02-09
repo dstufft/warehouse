@@ -10,7 +10,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyramid.httpexceptions import HTTPMovedPermanently, HTTPNotFound
+from pyramid.httpexceptions import HTTPMovedPermanently, HTTPNotFound, HTTPAccepted
 from pyramid.response import FileIter, Response
 from pyramid.view import view_config
 from sqlalchemy.orm import joinedload
@@ -19,7 +19,9 @@ from sqlalchemy.orm.exc import NoResultFound
 from warehouse.accounts.models import User
 from warehouse.cache.http import cache_control
 from warehouse.cache.origin import origin_cache
-from warehouse.packaging.interfaces import IFileStorage
+from warehouse.packaging.interfaces import (
+    IFileStorage, IDownloadStatService, StatsPending,
+)
 from warehouse.packaging.models import Release, File, Role
 
 
@@ -104,6 +106,34 @@ def release_detail(release, request):
         "all_releases": all_releases,
         "maintainers": maintainers,
     }
+
+
+@view_config(
+    route_name="internal.project-stats",
+    renderer="packaging/includes/stats.html",
+    # decorator=[
+    #     origin_cache(
+    #         1 * 24 * 60 * 60,                         # 1 day
+    #         stale_while_revalidate=1 * 24 * 60 * 60,  # 1 day
+    #         stale_if_error=5 * 24 * 60 * 60,          # 5 days
+    #     ),
+    # ],
+)
+def project_stats(release, request):
+    stats = request.find_service(IDownloadStatService)
+
+    try:
+        return {
+            "release": release,
+            "stats": stats.get(
+                release.project.normalized_name,
+                release.version,
+            )
+        }
+    except StatsPending:
+        # TOOD: The RFC states that this SHOULD include some way to monitor the
+        #       status or or when it can be expected to be completed.
+        return HTTPAccepted()
 
 
 @view_config(

@@ -13,6 +13,10 @@
 from zope.interface import Interface
 
 
+class StatsPending(Exception):
+    pass
+
+
 class IDownloadStatService(Interface):
 
     def get_daily_stats(project):

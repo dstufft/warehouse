@@ -167,7 +167,10 @@ def configure(settings=None):
     maybe_set(settings, "celery.result_url", "REDIS_URL")
     maybe_set(settings, "csp.report_uri", "CSP_REPORT_URI")
     maybe_set(settings, "database.url", "DATABASE_URL")
+    maybe_set(settings, "redis.url", "REDIS_URL")
     maybe_set(settings, "elasticsearch.url", "ELASTICSEARCH_URL")
+    maybe_set(settings, "google.credentials", "GOOGLE_CREDENTIALS")
+    maybe_set(settings, "google.project", "GOOGLE_PROJECT")
     maybe_set(settings, "sentry.dsn", "SENTRY_DSN")
     maybe_set(settings, "sentry.transport", "SENTRY_TRANSPORT")
     maybe_set(settings, "sessions.url", "REDIS_URL")
@@ -292,10 +295,16 @@ def configure(settings=None):
     # Register the configuration for the PostgreSQL database.
     config.include(".db")
 
+    # Register the configuration for the Redis database.
+    config.include(".redis")
+
     config.include(".search")
 
     # Register the support for AWS
     config.include(".aws")
+
+    # Register support for Google Cloud Services
+    config.include(".google")
 
     # Register the support for Celery
     config.include(".celery")

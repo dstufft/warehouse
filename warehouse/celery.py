@@ -16,7 +16,7 @@ import celery.backends
 # signals that you should use Redis with TLS.
 celery.backends.BACKEND_ALIASES["rediss"] = "warehouse.celery:TLSRedisBackend"  # noqa
 
-from celery import Celery, Task
+from celery import Celery, Task, chord
 from celery.backends.redis import RedisBackend as _RedisBackend
 from celery.signals import celeryd_init
 from pyramid import scripting
@@ -25,9 +25,12 @@ from pyramid.threadlocal import get_current_request
 from warehouse.config import Environment, configure
 
 
+__all__ = ["task", "chord", "includeme"]
+
+
 @celeryd_init.connect
-def _configure_celery(*args, **kwargs):
-    configure()
+def _configure_celery(instance, conf, **kwargs):
+    conf["PYRAMID_WSIG_APPI"] = configure().make_wsgi_app()
 
 
 class TLSRedisBackend(_RedisBackend):
@@ -43,11 +46,13 @@ class WarehouseTask(Task):
     abstract = True
 
     def __call__(self, *args, **kwargs):
-        registry = self.app.pyramid_config.registry
-        pyramid_env = scripting.prepare(registry=registry)
+        pyramid_env = scripting.prepare()
+
+        if getattr(self, "pyramid_request", False):
+            args = (pyramid_env["request"],) + args
 
         try:
-            return super().__call__(pyramid_env["request"], *args, **kwargs)
+            return super().__call__(*args, **kwargs)
         finally:
             pyramid_env["closer"]()
 
@@ -58,7 +63,8 @@ class WarehouseTask(Task):
 
         # If for whatever reason we were unable to get a request we'll just
         # skip this and call the original method to send this immediately.
-        if request is None or not hasattr(request, "tm"):
+        if (request is None or not hasattr(request, "tm") or
+                request.tm._txn is None):
             return super().apply_async(*args, **kwargs)
 
         # This will break things that expect to get an AsyncResult because
@@ -85,7 +91,6 @@ task = app.task
 
 def includeme(config):
     s = config.registry.settings
-    app.pyramid_config = config
     app.conf.update(
         BROKER_URL=s["celery.broker_url"],
         BROKER_USE_SSL=s["warehouse.env"] == Environment.production,

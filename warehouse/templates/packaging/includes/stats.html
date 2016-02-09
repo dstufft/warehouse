@@ -1,0 +1,26 @@
+<div class="button-set">
+  <a class="wh-button -highlight" href="#" {{ l20n("allVersions") }}>All versions</a>
+  <a class="wh-button" href="#" {{ l20n("thisVersionOnly", version=release.version) }}>This version only ({{ release.version }})</a>
+</div>
+
+<div class="download-graph">
+  <div class="download-overview">
+    <p {{ l20n("downloadsToday", num=stats.all.daily) }}><strong>Today:</strong> {{ stats.all.daily }}</p>
+    <p {{ l20n("downloadsThisWeek", num=stats.all.weekly) }}><strong>This Week:</strong> {{ stats.all.weekly }}</p>
+    <p {{ l20n("downloadsThisMonth", num=stats.all.monthly) }}><strong>This Month: </strong> {{ stats.all.monthly }}</p>
+    <p {{ l20n("downloadsThisYear", num=stats.all.yearly) }}><strong>This Year: </strong> {{ stats.all.yearly }}</p>
+  </div>
+
+  <p>TODO: Bar chart here showing downloads over time</p>
+</div>
+
+<div class="download-graph">
+  <div class="download-overview">
+    <p {{ l20n("downloadsToday", num=stats.version.daily) }}><strong>Today:</strong> {{ stats.version.daily }}</p>
+    <p {{ l20n("downloadsThisWeek", num=stats.version.weekly) }}><strong>This Week:</strong> {{ stats.version.weekly }}</p>
+    <p {{ l20n("downloadsThisMonth", num=stats.version.monthly) }}><strong>This Month: </strong> {{ stats.version.monthly }}</p>
+    <p {{ l20n("downloadsThisYear", num=stats.version.yearly) }}><strong>This Year: </strong> {{ stats.version.yearly }}</p>
+  </div>
+
+  <p>TODO: Bar chart here showing downloads over time</p>
+</div>
