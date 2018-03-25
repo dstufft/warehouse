@@ -12,16 +12,13 @@
 
 import functools
 import time
+import uuid
 
-import msgpack
-import msgpack.exceptions
-import redis
-
-from pyramid import viewderivers
 from pyramid.interfaces import ISession, ISessionFactory
 from zope.interface import implementer
 
 from warehouse.cache.http import add_vary
+from warehouse.sessions.models import Session as DBSession
 from warehouse.utils import crypto
 
 
@@ -111,7 +108,7 @@ class Session(dict):
     @property
     def sid(self):
         if self._sid is None:
-            self._sid = crypto.random_token()
+            self._sid = str(uuid.uuid4())
         return self._sid
 
     def changed(self):
@@ -173,15 +170,11 @@ class SessionFactory:
     cookie_name = "session_id"
     max_age = 12 * 60 * 60  # 12 hours
 
-    def __init__(self, secret, url):
-        self.redis = redis.StrictRedis.from_url(url)
+    def __init__(self, secret):
         self.signer = crypto.TimestampSigner(secret, salt="session")
 
     def __call__(self, request):
         return self._process_request(request)
-
-    def _redis_key(self, session_id):
-        return "warehouse/session/data/{}".format(session_id)
 
     def _process_request(self, request):
         # Register a callback with the request so we can save the session once
@@ -204,26 +197,25 @@ class SessionFactory:
             return Session()
 
         # Fetch the serialized data from redis
-        bdata = self.redis.get(self._redis_key(session_id))
+        session_obj = request.db.query(DBSession).get(session_id)
 
         # If the session didn't exist in redis, we'll give the user a new
         # session.
-        if bdata is None:
+        if session_obj is None:
             return Session()
 
         # De-serialize our session data
-        try:
-            data = msgpack.unpackb(bdata, encoding="utf8", use_list=True)
-        except (msgpack.exceptions.UnpackException,
-                msgpack.exceptions.ExtraData):
-            # If the session data was invalid we'll give the user a new session
-            return Session()
+        # try:
+        #     data = msgpack.unpackb(bdata, encoding="utf8", use_list=True)
+        # except (msgpack.exceptions.UnpackException,
+        #         msgpack.exceptions.ExtraData):
+        #     # If the session data was invalid we'll give the user a new session
+        #     return Session()
 
         # If we were able to load existing session data, load it into a
         # Session class
-        session = Session(data, session_id, False)
-
-        return session
+        # TODO: Should we do a deepcopy to get rid of MutableDict?
+        return Session(session_obj.data, session_id, False)
 
     def _process_response(self, request, response):
         # If the request has an InvalidSession, then the view can't have
@@ -236,7 +228,9 @@ class SessionFactory:
         # session cookie as well.
         if request.session.invalidated:
             for session_id in request.session.invalidated:
-                self.redis.delete(self._redis_key(session_id))
+                (request.db.query(DBSession)
+                           .filter(DBSession.id == request.session.sid)
+                           .delete())
 
             if not request.session.should_save():
                 response.delete_cookie(self.cookie_name)
@@ -245,15 +239,8 @@ class SessionFactory:
         # this means that the session data has been modified and thus we need
         # to store the new data.
         if request.session.should_save():
-            # Save our session in Redis
-            self.redis.setex(
-                self._redis_key(request.session.sid),
-                self.max_age,
-                msgpack.packb(
-                    request.session,
-                    encoding="utf8",
-                    use_bin_type=True,
-                ),
+            session_obj = request.db.merge(
+                DBSession(id=request.session.sid, data=request.session),
             )
 
             # Send our session cookie to the client
@@ -312,18 +299,3 @@ def session_view(view, info):
 
 
 session_view.options = {"uses_session"}
-
-
-def includeme(config):
-    config.set_session_factory(
-        SessionFactory(
-            config.registry.settings["sessions.secret"],
-            config.registry.settings["sessions.url"],
-        ),
-    )
-
-    config.add_view_deriver(
-        session_view,
-        over="csrf_view",
-        under=viewderivers.INGRESS,
-    )
