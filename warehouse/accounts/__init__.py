@@ -21,7 +21,10 @@ from warehouse.accounts.auth_policy import (
     BasicAuthAuthenticationPolicy,
     SessionAuthenticationPolicy,
 )
-from warehouse.macaroons.auth_policy import MacaroonAuthenticationPolicy
+from warehouse.macaroons.auth_policy import (
+    MacaroonAuthenticationPolicy,
+    MacaroonAuthorizationPolicy,
+)
 from warehouse.rate_limiting import RateLimit, IRateLimiter
 
 
@@ -84,7 +87,9 @@ def includeme(config):
             ]
         )
     )
-    config.set_authorization_policy(ACLAuthorizationPolicy())
+    config.set_authorization_policy(
+        MacaroonAuthorizationPolicy(policy=ACLAuthorizationPolicy())
+    )
 
     # Add a request method which will allow people to access the user object.
     config.add_request_method(_user, name="user", reify=True)
