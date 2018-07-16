@@ -21,6 +21,7 @@ from warehouse.accounts.auth_policy import (
     BasicAuthAuthenticationPolicy,
     SessionAuthenticationPolicy,
 )
+from warehouse.macaroons.auth_policy import MacaroonAuthenticationPolicy
 from warehouse.rate_limiting import RateLimit, IRateLimiter
 
 
@@ -78,6 +79,7 @@ def includeme(config):
         MultiAuthenticationPolicy(
             [
                 SessionAuthenticationPolicy(callback=_authenticate),
+                MacaroonAuthenticationPolicy(callback=_authenticate),
                 BasicAuthAuthenticationPolicy(check=_login),
             ]
         )
