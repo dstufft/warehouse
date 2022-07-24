@@ -9,6 +9,7 @@
 .state
 .idea
 .envrc
+.bazel/
 
 docs/_build/
 build/
