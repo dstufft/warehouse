@@ -3,8 +3,12 @@ load("@rules_python//gazelle:def.bzl", "GAZELLE_PYTHON_RUNTIME_DEPS")
 
 # gazelle:python_generation_mode project
 # gazelle:python_manifest_file_name external/pypi/default/gazelle.yaml
+# gazelle:python_validate_import_statements false
 
-# gazelle:exclude services/warehouse
+# gazelle:resolve py zope.interface @pip_zope_interface//:pkg
+# gazelle:resolve py zope.sqlalchemy @pip_zope_sqlalchemy//:pkg
+
+# gazelle:exclude .bazel
 # gazelle:exclude tests
 # gazelle:exclude bin
 # gazelle:exclude docs
