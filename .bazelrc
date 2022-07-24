@@ -1,3 +1,2 @@
-common --symlink_prefix .bazel/
-
+build --symlink_prefix .bazel/
 build --incompatible_default_to_explicit_init_py
