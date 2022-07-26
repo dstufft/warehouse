@@ -2,6 +2,7 @@ workspace(name = "warehouse")
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
+
 # Setup our Python Support
 http_archive(
     name = "rules_python",
@@ -65,3 +66,36 @@ gazelle_dependencies()
 load("@rules_python//gazelle:deps.bzl", _py_gazelle_deps = "gazelle_deps")
 
 _py_gazelle_deps()
+
+
+# Setup our Docker Support
+http_archive(
+    name = "io_bazel_rules_docker",
+    sha256 = "b1e80761a8a8243d03ebca8845e9cc1ba6c82ce7c5179ce2b295cd36f7e394bf",
+    urls = ["https://github.com/bazelbuild/rules_docker/releases/download/v0.25.0/rules_docker-v0.25.0.tar.gz"],
+)
+
+load(
+    "@io_bazel_rules_docker//repositories:repositories.bzl",
+    container_repositories = "repositories",
+)
+container_repositories()
+
+load("@io_bazel_rules_docker//repositories:deps.bzl", container_deps = "deps")
+container_deps()
+
+load(
+    "@io_bazel_rules_docker//container:container.bzl",
+    "container_pull",
+)
+
+container_pull(
+    name = "py3_image_base",
+    registry = "gcr.io",
+    repository = "distroless/python3",
+    digest = "sha256:dd905a4f7f2f5259de0db629c7b5ee374603d87b40729bd03575c10bd02b0c85",
+    tag = "latest"
+)
+
+load("@io_bazel_rules_docker//python3:image.bzl", _py_image_repos = "repositories")
+_py_image_repos()

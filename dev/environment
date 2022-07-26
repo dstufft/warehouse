@@ -1,5 +1,4 @@
-ENCODING=C.UTF-8
-PATH=/opt/warehouse/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
 
 WAREHOUSE_ENV=development
 WAREHOUSE_TOKEN=insecuretoken

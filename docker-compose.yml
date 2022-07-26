@@ -66,33 +66,34 @@ services:
       PORT: 9000
 
   web:
-    build:
-      context: .
-      args:
-        DEVEL: "yes"
-        IPYTHON: "no"
-    command: gunicorn --reload -b 0.0.0.0:8000 warehouse.wsgi:application
+    # build:
+    #   context: .
+    #   args:
+    #     DEVEL: "yes"
+    #     IPYTHON: "no"
+    # command: gunicorn --reload -b 0.0.0.0:8000 warehouse.wsgi:application
+    image: bazel/services/warehouse:serve
     env_file: dev/environment
-    volumes:
-      # We specify all of these directories instead of just . because we want to
-      # avoid having ./node_modules from the host OS being shared with the docker
-      # container, and since there's no way to exclude a directory, the only way
-      # to make this work is to share multiple, smaller directories. These cover
-      # the important things that we want to share, but changes to requirements
-      # or any file not in these directories will require a rebuild.
-      # The :z option fixes permission issues with SELinux by setting a
-      # permissive security context.
-      - ./dev:/opt/warehouse/src/dev:z
-      - ./docs:/opt/warehouse/src/docs:z
-      - ./warehouse:/opt/warehouse/src/warehouse:z
-      - ./tests:/opt/warehouse/src/tests:z
-      - ./htmlcov:/opt/warehouse/src/htmlcov:z
-      - .coveragerc:/opt/warehouse/src/.coveragerc:z
-      - packages:/var/opt/warehouse/packages
-      - sponsorlogos:/var/opt/warehouse/sponsorlogos
-      - simple:/var/opt/warehouse/simple
-      - ./bin:/opt/warehouse/src/bin:z
-      - ./requirements:/opt/warehouse/src/requirements:z
+    # volumes:
+    #   # We specify all of these directories instead of just . because we want to
+    #   # avoid having ./node_modules from the host OS being shared with the docker
+    #   # container, and since there's no way to exclude a directory, the only way
+    #   # to make this work is to share multiple, smaller directories. These cover
+    #   # the important things that we want to share, but changes to requirements
+    #   # or any file not in these directories will require a rebuild.
+    #   # The :z option fixes permission issues with SELinux by setting a
+    #   # permissive security context.
+    #   - ./dev:/opt/warehouse/src/dev:z
+    #   - ./docs:/opt/warehouse/src/docs:z
+    #   - ./warehouse:/opt/warehouse/src/warehouse:z
+    #   - ./tests:/opt/warehouse/src/tests:z
+    #   - ./htmlcov:/opt/warehouse/src/htmlcov:z
+    #   - .coveragerc:/opt/warehouse/src/.coveragerc:z
+    #   - packages:/var/opt/warehouse/packages
+    #   - sponsorlogos:/var/opt/warehouse/sponsorlogos
+    #   - simple:/var/opt/warehouse/simple
+    #   - ./bin:/opt/warehouse/src/bin:z
+    #   - ./requirements:/opt/warehouse/src/requirements:z
     ports:
       - "${WEB_PORT:-80}:8000"
     depends_on:
@@ -103,44 +104,44 @@ services:
       redis:
         condition: service_started
 
-  files:
-    build:
-      context: .
-    working_dir: /var/opt/warehouse
-    command: python -m http.server 9001
-    volumes:
-      - packages:/var/opt/warehouse/packages
-      - sponsorlogos:/var/opt/warehouse/sponsorlogos
-      - simple:/var/opt/warehouse/simple
-    ports:
-      - "9001:9001"
+  # files:
+  #   build:
+  #     context: .
+  #   working_dir: /var/opt/warehouse
+  #   command: python -m http.server 9001
+  #   volumes:
+  #     - packages:/var/opt/warehouse/packages
+  #     - sponsorlogos:/var/opt/warehouse/sponsorlogos
+  #     - simple:/var/opt/warehouse/simple
+  #   ports:
+  #     - "9001:9001"
 
-  worker:
-    build:
-      context: .
-      args:
-        DEVEL: "yes"
-    command: hupper -m celery -A warehouse worker -B -S redbeat.RedBeatScheduler -l info
-    volumes:
-      - ./warehouse:/opt/warehouse/src/warehouse:z
-    env_file: dev/environment
-    environment:
-      C_FORCE_ROOT: "1"
-      FILES_BACKEND: "warehouse.packaging.services.LocalFileStorage path=/var/opt/warehouse/packages/ url=http://files:9001/packages/{path}"
-      SIMPLE_BACKEND: "warehouse.packaging.services.LocalSimpleStorage path=/var/opt/warehouse/simple/ url=http://files:9001/simple/{path}"
+  # worker:
+  #   build:
+  #     context: .
+  #     args:
+  #       DEVEL: "yes"
+  #   command: hupper -m celery -A warehouse worker -B -S redbeat.RedBeatScheduler -l info
+  #   volumes:
+  #     - ./warehouse:/opt/warehouse/src/warehouse:z
+  #   env_file: dev/environment
+  #   environment:
+  #     C_FORCE_ROOT: "1"
+  #     FILES_BACKEND: "warehouse.packaging.services.LocalFileStorage path=/var/opt/warehouse/packages/ url=http://files:9001/packages/{path}"
+  #     SIMPLE_BACKEND: "warehouse.packaging.services.LocalSimpleStorage path=/var/opt/warehouse/simple/ url=http://files:9001/simple/{path}"
 
-  static:
-    build:
-      context: .
-      dockerfile: Dockerfile.static
-    command: bash -c "node --trace-warnings `which gulp` watch"
-    volumes:
-      - ./warehouse:/opt/warehouse/src/warehouse:z
-      - ./Gulpfile.babel.js:/opt/warehouse/src/Gulpfile.babel.js:z
-      - ./.babelrc:/opt/warehouse/src/.babelrc:z
-      - ./.sass-lint.yml:/opt/warehouse/src/.sass-lint.yml:z
-      - ./tests/frontend:/opt/warehouse/src/tests/frontend:z
-      - ./bin:/opt/warehouse/src/bin:z
+  # static:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.static
+  #   command: bash -c "node --trace-warnings `which gulp` watch"
+  #   volumes:
+  #     - ./warehouse:/opt/warehouse/src/warehouse:z
+  #     - ./Gulpfile.babel.js:/opt/warehouse/src/Gulpfile.babel.js:z
+  #     - ./.babelrc:/opt/warehouse/src/.babelrc:z
+  #     - ./.sass-lint.yml:/opt/warehouse/src/.sass-lint.yml:z
+  #     - ./tests/frontend:/opt/warehouse/src/tests/frontend:z
+  #     - ./bin:/opt/warehouse/src/bin:z
 
   maildev:
     image: maildev/maildev:2.0.2
@@ -148,14 +149,14 @@ services:
       - "1080:1080"
       - "1025:1025"
 
-  notdatadog:
-    build:
-      context: .
-    command: python /opt/warehouse/dev/notdatadog.py 0.0.0.0:8125
-    ports:
-      - "8125:8125/udp"
-    volumes:
-      - ./dev/notdatadog.py:/opt/warehouse/dev/notdatadog.py
+  # notdatadog:
+  #   build:
+  #     context: .
+  #   command: python /opt/warehouse/dev/notdatadog.py 0.0.0.0:8125
+  #   ports:
+  #     - "8125:8125/udp"
+  #   volumes:
+  #     - ./dev/notdatadog.py:/opt/warehouse/dev/notdatadog.py
 
   notgithub:
     image: ewjoachim/notgithub-token-scanning

@@ -367,6 +367,10 @@ py_library(
         "src/warehouse/wsgi.py",
         "src/warehouse/xml.py",
     ],
+    data = glob([
+        "src/warehouse/locale/**/*.mo",
+        "src/warehouse/locale/**/*.po",
+    ]),
     imports = ["src"],
     visibility = ["//:__subpackages__"],
     deps = [
@@ -386,6 +390,8 @@ py_library(
         "@pip_first//:pkg",
         "@pip_google_api_core//:pkg",
         "@pip_google_cloud_bigquery//:pkg",
+        # keep
+        "@pip_google_cloud_storage//:pkg",
         "@pip_html5lib//:pkg",
         "@pip_ipython//:pkg",
         "@pip_itsdangerous//:pkg",
@@ -408,6 +414,8 @@ py_library(
         "@pip_pymacaroons//:pkg",
         "@pip_pyqrcode//:pkg",
         "@pip_pyramid//:pkg",
+        # keep
+        "@pip_pyramid_debugtoolbar//:pkg",
         "@pip_pyramid_jinja2//:pkg",
         "@pip_pyramid_mailer//:pkg",
         "@pip_pyramid_retry//:pkg",

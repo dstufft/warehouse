@@ -2,6 +2,7 @@
 """
 load("@rules_python//python:defs.bzl", "py_binary")
 load("@pip//:requirements.bzl", "requirement")
+load("@io_bazel_rules_docker//python3:image.bzl", "py3_image")
 
 
 def _web_service_impl(ctx):
@@ -34,11 +35,18 @@ def web_service(name, entrypoint, deps):
         entrypoint = entrypoint,
     )
 
-    py_binary(
+    # py_binary(
+    #     name = name,
+    #     srcs = [
+    #         "%s.py" % name,
+    #     ],
+    #     main = "%s.py" % name,
+    #     deps = deps + [requirement("gunicorn")],
+    # )
+
+    py3_image(
         name = name,
-        srcs = [
-            "%s.py" % name,
-        ],
-        main = "%s.py" % name,
+        srcs = ["%s.py" % name],
+        main =  "%s.py" % name,
         deps = deps + [requirement("gunicorn")],
     )
