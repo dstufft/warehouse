@@ -46,16 +46,6 @@ from ...common.db.oidc import GitHubPublisherFactory
 
 
 class TestLogin:
-    def test_invalid_route(self, pyramid_request, pyramid_services):
-        service = pretend.stub(find_userid=pretend.call_recorder(lambda username: None))
-        pyramid_services.register_service(service, IUserService, None)
-        pyramid_services.register_service(
-            pretend.stub(), IPasswordBreachedService, None
-        )
-        pyramid_request.matched_route = pretend.stub(name="route_name")
-        assert _basic_auth_check("myuser", "mypass", pyramid_request) is False
-        assert service.find_userid.calls == []
-
     def test_with_no_user(self, pyramid_request, pyramid_services):
         service = pretend.stub(find_userid=pretend.call_recorder(lambda username: None))
         pyramid_services.register_service(service, IUserService, None)
@@ -390,14 +380,8 @@ class TestUnauthenticatedUserid:
 
 
 def test_includeme(monkeypatch):
-    authz_obj = pretend.stub()
-    authz_cls = pretend.call_recorder(lambda *a, **kw: authz_obj)
-    monkeypatch.setattr(accounts, "ACLAuthorizationPolicy", authz_cls)
-    monkeypatch.setattr(accounts, "MacaroonAuthorizationPolicy", authz_cls)
-    monkeypatch.setattr(accounts, "TwoFactorAuthorizationPolicy", authz_cls)
-
     multi_policy_obj = pretend.stub()
-    multi_policy_cls = pretend.call_recorder(lambda ps, authz: multi_policy_obj)
+    multi_policy_cls = pretend.call_recorder(lambda ps: multi_policy_obj)
     monkeypatch.setattr(accounts, "MultiSecurityPolicy", multi_policy_cls)
 
     session_policy_obj = pretend.stub()
@@ -474,6 +458,10 @@ def test_includeme(monkeypatch):
     assert config.set_security_policy.calls == [pretend.call(multi_policy_obj)]
     assert multi_policy_cls.calls == [
         pretend.call(
-            [session_policy_obj, basic_policy_obj, macaroon_policy_obj], authz_obj
+            [
+                session_policy_obj,
+                basic_policy_obj,
+                macaroon_policy_obj,
+            ]
         )
     ]
