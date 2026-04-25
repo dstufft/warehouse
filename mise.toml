@@ -3,6 +3,7 @@ experimental = true  # turn on support for `mise deps`
 idiomatic_version_file_enable_tools = ["python"]
 
 [tools]
+make = "latest"
 uv = "latest"
 
 [env]
@@ -28,3 +29,6 @@ run = ["./bin/lint"]
 
 [tasks.licenses]
 run = ["./bin/licenses"]
+
+[tasks.translations]
+run = ["./bin/translations"]
