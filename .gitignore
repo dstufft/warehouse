@@ -10,6 +10,7 @@
 .idea
 .envrc
 .venv
+.mise
 
 docs/dev/_build/
 docs/user/_build/

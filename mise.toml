@@ -1,0 +1,27 @@
+[settings]
+experimental = true  # turn on support for `mise deps`
+idiomatic_version_file_enable_tools = ["python"]
+
+[tools]
+uv = "latest"
+
+[env]
+_.python.venv = { path = ".venv", create = true }
+
+[deps.pip]
+auto = true
+sources = [
+    "requirements/deploy.txt",
+    "requirements/main.txt",
+    "requirements/dev.txt",
+    "requirements/tests.txt",
+    "requirements/lint.txt"
+]
+# Use `uv pip` instead of just `pip`
+run = "uv pip install -r requirements/deploy.txt -r requirements/main.txt -r requirements/dev.txt -r requirements/tests.txt -r requirements/lint.txt"
+
+[tasks.fmt]
+run = ["./bin/reformat"]
+
+[tasks.lint]
+run = ["./bin/lint"]
