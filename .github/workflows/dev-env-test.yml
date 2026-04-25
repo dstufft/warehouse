@@ -20,3 +20,4 @@ jobs:
       - run: docker compose ps
       - run: make initdb
       - run: make tests
+      - run: bin/mise install
