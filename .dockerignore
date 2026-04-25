@@ -2,6 +2,7 @@
 .env*
 .git/*
 .idea/
+.mise/
 .mypy_cache/
 .state/
 .stylelintcache
