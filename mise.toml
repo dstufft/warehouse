@@ -2,6 +2,7 @@
 experimental = true  # turn on support for `mise deps`
 idiomatic_version_file_enable_tools = ["python"]
 lockfile = true
+locked_verify_provenance = true
 
 [tools]
 make = "latest"
