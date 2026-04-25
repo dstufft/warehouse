@@ -1,5 +1,6 @@
 paths-ignore:
   - .venv
+  - .mise
   - node_modules
   - "**/*.min.js"
   - "**/*.bundle.js"
