@@ -25,3 +25,6 @@ run = ["./bin/reformat"]
 
 [tasks.lint]
 run = ["./bin/lint"]
+
+[tasks.licenses]
+run = ["./bin/licenses"]

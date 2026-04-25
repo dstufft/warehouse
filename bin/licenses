@@ -12,6 +12,7 @@ for fn in $(find . -type f \( \
           ! -path "./.cache*" \
           ! -path "./.state*" \
           ! -path "./.venv*" \
+          ! -path "./.mise*" \
           ! -path "./docs*" \
           ! -path "./htmlcov*" \
           ! -path "./node_modules*" \
