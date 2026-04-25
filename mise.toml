@@ -1,6 +1,7 @@
 [settings]
 experimental = true  # turn on support for `mise deps`
 idiomatic_version_file_enable_tools = ["python"]
+install_before = "7d"  # only resolve to versions released more than 7 days ago
 lockfile = true
 locked_verify_provenance = true
 
