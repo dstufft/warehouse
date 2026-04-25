@@ -1,4 +1,5 @@
 [settings]
+disable_backends = ["asdf", "ubi", "vfox"]  # these backends are deprecated
 experimental = true  # turn on support for `mise deps`
 idiomatic_version_file_enable_tools = ["python"]  # use .python-version
 install_before = "7d"  # only resolve to versions released more than 7 days ago
