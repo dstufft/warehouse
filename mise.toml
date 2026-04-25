@@ -1,9 +1,10 @@
 [settings]
 experimental = true  # turn on support for `mise deps`
-idiomatic_version_file_enable_tools = ["python"]
+idiomatic_version_file_enable_tools = ["python"]  # use .python-version
 install_before = "7d"  # only resolve to versions released more than 7 days ago
-lockfile = true
-locked_verify_provenance = true
+lockfile = true  # turn on lockfile support
+locked = true  # fail if we try to install something not in the lockfile
+locked_verify_provenance = true  # verify provenance even with a lockfile.
 
 [tools]
 make = "latest"
