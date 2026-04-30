@@ -4533,7 +4533,7 @@ requires-dist = [
     { name = "babel" },
     { name = "bcrypt" },
     { name = "boto3" },
-    { name = "celery", extras = ["redis"], specifier = ">=5.6.2,<5.7" },
+    { name = "celery", extras = ["redis"], specifier = ">=5.6.2" },
     { name = "celery-redbeat" },
     { name = "certifi" },
     { name = "click" },
