@@ -4657,7 +4657,7 @@ lint = [
     { name = "types-python-slugify" },
     { name = "types-pytz" },
     { name = "types-redis" },
-    { name = "types-requests", specifier = "==2.33.0.20260408" },
+    { name = "types-requests" },
     { name = "types-stripe" },
     { name = "types-webob" },
     { name = "types-wtforms" },
