@@ -4571,7 +4571,7 @@ requires-dist = [
     { name = "pydantic" },
     { name = "pyjwt", extras = ["crypto"], specifier = ">=2.8.0" },
     { name = "pymacaroons" },
-    { name = "pypi-attestations", specifier = "==0.0.29" },
+    { name = "pypi-attestations" },
     { name = "pyqrcode-binary" },
     { name = "pyramid", specifier = ">=2.0" },
     { name = "pyramid-jinja2", specifier = ">=2.5" },

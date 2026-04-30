@@ -50,7 +50,7 @@ dependencies = [
   "psycopg[binary]",
   "pydantic",
   "pymacaroons",
-  "pypi-attestations==0.0.29",
+  "pypi-attestations",
   "pyqrcode-binary",
   "pyramid>=2.0",
   "pyramid_jinja2>=2.5",
