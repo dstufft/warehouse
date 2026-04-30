@@ -4599,7 +4599,7 @@ requires-dist = [
     { name = "trove-classifiers" },
     { name = "ua-parser" },
     { name = "urllib3" },
-    { name = "webauthn", specifier = ">=1.0.0,<3.0.0" },
+    { name = "webauthn", specifier = ">=1.0.0" },
     { name = "whitenoise" },
     { name = "wtforms", extras = ["email"], specifier = ">=2.0.0" },
     { name = "yara-x" },

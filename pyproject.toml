@@ -78,7 +78,7 @@ dependencies = [
   "trove-classifiers",
   "ua-parser",
   "urllib3",
-  "webauthn>=1.0.0,<3.0.0",
+  "webauthn>=1.0.0",
   "whitenoise",
   "yara-x",
   "zope.sqlalchemy",
