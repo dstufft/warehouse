@@ -4609,7 +4609,7 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 deploy = [
-    { name = "ddtrace", specifier = "==4.7.0" },
+    { name = "ddtrace" },
     { name = "gunicorn", specifier = "<24.0.0" },
 ]
 dev = [

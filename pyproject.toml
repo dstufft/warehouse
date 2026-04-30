@@ -93,7 +93,7 @@ dev = [
   "watchdog",
 ]
 deploy = [
-  "ddtrace==4.7.0",
+  "ddtrace",
   "gunicorn<24.0.0",  # pin to below 24 to avoid a restart error
 ]
 docs-blog = [
