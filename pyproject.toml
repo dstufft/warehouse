@@ -124,7 +124,7 @@ lint = [
   "msgpack-types",
   "mypy",
   "mypy-zope",
-  "ruff==0.15.12",
+  "ruff",
   "sphinx-lint",
   "types-WTForms",
   "types-WebOb",
