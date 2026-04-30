@@ -4590,7 +4590,7 @@ requires-dist = [
     { name = "requests-aws4auth" },
     { name = "rfc3986" },
     { name = "sentry-sdk" },
-    { name = "sqlalchemy", extras = ["asyncio"], specifier = ">=2.0,<3.0" },
+    { name = "sqlalchemy", extras = ["asyncio"], specifier = ">=2.0" },
     { name = "stdlib-list" },
     { name = "stripe" },
     { name = "structlog" },
