@@ -31,8 +31,6 @@ dependencies = [
   "html5lib",
   "humanize",
   "itsdangerous",
-  # https://github.com/jazzband/pip-tools/issues/1577
-  "kombu[redis]>=5.6,<5.7",
   "limits",
   "linehaul",
   "lxml",
