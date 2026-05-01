@@ -13,8 +13,8 @@ from pyramid import renderers
 from pyramid.authorization import Allow, Authenticated
 from pyramid.tweens import EXCVIEW
 
-from warehouse import config
 from warehouse.authnz import Permissions
+from warehouse.config import pyramid as pyramid_config
 from warehouse.utils.wsgi import ProxyFixer, VhmRootRemover
 
 
@@ -25,7 +25,7 @@ class TestRequireHTTPSTween:
             settings=pretend.stub(get=pretend.call_recorder(lambda k, v: False))
         )
 
-        assert config.require_https_tween_factory(handler, registry) is handler
+        assert pyramid_config.require_https_tween_factory(handler, registry) is handler
         assert registry.settings.get.calls == [pretend.call("enforce_https", True)]
 
     @pytest.mark.parametrize(
@@ -38,7 +38,7 @@ class TestRequireHTTPSTween:
         handler = pretend.call_recorder(lambda req: response)
         registry = pretend.stub(settings=pretend.stub(get=lambda k, v: True))
 
-        tween = config.require_https_tween_factory(handler, registry)
+        tween = pyramid_config.require_https_tween_factory(handler, registry)
 
         assert tween(request) is response
         assert handler.calls == [pretend.call(request)]
@@ -49,7 +49,7 @@ class TestRequireHTTPSTween:
         handler = pretend.stub()
         registry = pretend.stub(settings=pretend.stub(get=lambda k, v: True))
 
-        tween = config.require_https_tween_factory(handler, registry)
+        tween = pyramid_config.require_https_tween_factory(handler, registry)
         resp = tween(request)
 
         assert resp.status == "403 SSL is required"
@@ -64,7 +64,7 @@ class TestRequireHTTPSTween:
 )
 def test_activate_hook(path, expected):
     request = pretend.stub(path=path)
-    assert config.activate_hook(request) == expected
+    assert pyramid_config.activate_hook(request) == expected
 
 
 @pytest.mark.parametrize("route_kw", [None, {}, {"foo": "bar"}])
@@ -74,7 +74,9 @@ def test_template_view(route_kw):
         add_view=pretend.call_recorder(lambda *a, **kw: None),
     )
 
-    config.template_view(configobj, "test", "/test/", "test.html", route_kw=route_kw)
+    pyramid_config.template_view(
+        configobj, "test", "/test/", "test.html", route_kw=route_kw
+    )
 
     assert configobj.add_route.calls == [
         pretend.call("test", "/test/", **({} if route_kw is None else route_kw))
@@ -98,7 +100,7 @@ def test_maybe_set(monkeypatch, environ, name, envvar, coercer, default, expecte
     for key, value in environ.items():
         monkeypatch.setenv(key, value)
     settings = {}
-    config.maybe_set(settings, name, envvar, coercer=coercer, default=default)
+    pyramid_config.maybe_set(settings, name, envvar, coercer=coercer, default=default)
     assert settings == expected
 
 
@@ -127,7 +129,7 @@ def test_maybe_set_compound(monkeypatch, environ, base, name, envvar, expected):
     for key, value in environ.items():
         monkeypatch.setenv(key, value)
     settings = {}
-    config.maybe_set_compound(settings, base, name, envvar)
+    pyramid_config.maybe_set_compound(settings, base, name, envvar)
     assert settings == expected
 
 
@@ -208,7 +210,7 @@ def test_maybe_set_redis(monkeypatch, environ, coercer, default, db, expected):
     for key, value in environ.items():
         monkeypatch.setenv(key, value)
     settings = {}
-    config.maybe_set_redis(
+    pyramid_config.maybe_set_redis(
         settings, "test.foo", "REDIS_URL", coercer=coercer, default=default, db=db
     )
     assert settings == expected
@@ -217,12 +219,12 @@ def test_maybe_set_redis(monkeypatch, environ, coercer, default, db, expected):
 @pytest.mark.parametrize(
     ("settings", "environment"),
     [
-        (None, config.Environment.production),
-        ({}, config.Environment.production),
-        ({"my settings": "the settings value"}, config.Environment.production),
-        (None, config.Environment.development),
-        ({}, config.Environment.development),
-        ({"my settings": "the settings value"}, config.Environment.development),
+        (None, pyramid_config.Environment.production),
+        ({}, pyramid_config.Environment.production),
+        ({"my settings": "the settings value"}, pyramid_config.Environment.production),
+        (None, pyramid_config.Environment.development),
+        ({}, pyramid_config.Environment.development),
+        ({"my settings": "the settings value"}, pyramid_config.Environment.development),
     ],
 )
 def test_configure(monkeypatch, settings, environment):
@@ -232,7 +234,7 @@ def test_configure(monkeypatch, settings, environment):
 
     xmlrpc_renderer_obj = pretend.stub()
     xmlrpc_renderer_cls = pretend.call_recorder(lambda **kw: xmlrpc_renderer_obj)
-    monkeypatch.setattr(config, "XMLRPCRenderer", xmlrpc_renderer_cls)
+    monkeypatch.setattr(pyramid_config, "XMLRPCRenderer", xmlrpc_renderer_cls)
 
     # Ignore all environment variables in the test environment, except for WAREHOUSE_ENV
     monkeypatch.setattr(
@@ -240,8 +242,8 @@ def test_configure(monkeypatch, settings, environment):
         "environ",
         {
             "WAREHOUSE_ENV": {
-                config.Environment.development: "development",
-                config.Environment.production: "production",
+                pyramid_config.Environment.development: "development",
+                pyramid_config.Environment.production: "production",
             }[environment],
             "GCLOUD_SERVICE_JSON": "e30=",
         },
@@ -278,24 +280,24 @@ def test_configure(monkeypatch, settings, environment):
         whitenoise_serve_static=pretend.call_recorder(lambda *a, **kw: None),
         whitenoise_add_files=pretend.call_recorder(lambda *a, **kw: None),
         whitenoise_add_manifest=pretend.call_recorder(lambda *a, **kw: None),
-        scan=pretend.call_recorder(lambda categories, ignore: None),
+        scan=pretend.call_recorder(lambda package, categories, ignore: None),
         commit=pretend.call_recorder(lambda: None),
         add_view_deriver=pretend.call_recorder(lambda *a, **kw: None),
     )
     configurator_cls = pretend.call_recorder(lambda settings: configurator_obj)
-    monkeypatch.setattr(config, "Configurator", configurator_cls)
+    monkeypatch.setattr(pyramid_config, "Configurator", configurator_cls)
 
     cachebuster_obj = pretend.stub()
     cachebuster_cls = pretend.call_recorder(lambda p, **kw: cachebuster_obj)
-    monkeypatch.setattr(config, "ManifestCacheBuster", cachebuster_cls)
+    monkeypatch.setattr(pyramid_config, "ManifestCacheBuster", cachebuster_cls)
 
     transaction_manager = pretend.stub()
     transaction = pretend.stub(
         TransactionManager=pretend.call_recorder(lambda: transaction_manager)
     )
-    monkeypatch.setattr(config, "transaction", transaction)
+    monkeypatch.setattr(pyramid_config, "transaction", transaction)
 
-    result = config.configure(settings=settings.copy() if settings else None)
+    result = pyramid_config.configure(settings=settings.copy() if settings else None)
 
     expected_settings = {
         "warehouse.env": environment,
@@ -336,7 +338,7 @@ def test_configure(monkeypatch, settings, environment):
         "warehouse.forklift.legacy.MAX_FILESIZE_MIB": 100,
         "warehouse.forklift.legacy.MAX_PROJECT_SIZE_GIB": 10,
     }
-    if environment == config.Environment.development:
+    if environment == pyramid_config.Environment.development:
         expected_settings.update(
             {
                 "enforce_https": False,
@@ -370,7 +372,9 @@ def test_configure(monkeypatch, settings, environment):
 
     assert configurator_cls.calls == [pretend.call(settings=expected_settings)]
     assert result is configurator_obj
-    assert configurator_obj.set_root_factory.calls == [pretend.call(config.RootFactory)]
+    assert configurator_obj.set_root_factory.calls == [
+        pretend.call(pyramid_config.RootFactory)
+    ]
     assert configurator_obj.add_wsgi_middleware.calls == [
         pretend.call(
             ProxyFixer, token="insecure token", ip_salt="insecure salt", num_proxies=1
@@ -380,73 +384,73 @@ def test_configure(monkeypatch, settings, environment):
     assert configurator_obj.include.calls == (
         [
             pretend.call("pyramid_services"),
-            pretend.call(".metrics"),
-            pretend.call(".csrf"),
+            pretend.call("warehouse.metrics"),
+            pretend.call("warehouse.csrf"),
         ]
         + [
             pretend.call(x)
             for x in [
                 (
                     "pyramid_debugtoolbar"
-                    if environment == config.Environment.development
+                    if environment == pyramid_config.Environment.development
                     else None
                 )
             ]
             if x is not None
         ]
         + [
-            pretend.call(".logging"),
+            pretend.call("warehouse.logging"),
             pretend.call("pyramid_jinja2"),
-            pretend.call(".filters"),
+            pretend.call("warehouse.filters"),
             pretend.call("pyramid_mailer"),
             pretend.call("pyramid_retry"),
             pretend.call("pyramid_tm"),
-            pretend.call(".rate_limiting"),
-            pretend.call(".legacy.api.xmlrpc"),
-            pretend.call(".legacy.api.xmlrpc.cache"),
+            pretend.call("warehouse.rate_limiting"),
+            pretend.call("warehouse.legacy.api.xmlrpc"),
+            pretend.call("warehouse.legacy.api.xmlrpc.cache"),
             pretend.call("pyramid_rpc.xmlrpc"),
-            pretend.call(".legacy.action_routing"),
-            pretend.call(".predicates"),
-            pretend.call(".i18n"),
-            pretend.call(".db"),
-            pretend.call(".tasks"),
-            pretend.call(".static"),
-            pretend.call(".search"),
-            pretend.call(".aws"),
-            pretend.call(".b2"),
-            pretend.call(".gcloud"),
-            pretend.call(".sessions"),
-            pretend.call(".cache.http"),
-            pretend.call(".cache.origin"),
-            pretend.call(".cache"),
-            pretend.call(".email"),
-            pretend.call(".accounts"),
-            pretend.call(".macaroons"),
-            pretend.call(".oidc"),
-            pretend.call(".attestations"),
-            pretend.call(".manage"),
-            pretend.call(".organizations"),
-            pretend.call(".subscriptions"),
-            pretend.call(".packaging"),
-            pretend.call(".redirects"),
+            pretend.call("warehouse.legacy.action_routing"),
+            pretend.call("warehouse.predicates"),
+            pretend.call("warehouse.i18n"),
+            pretend.call("warehouse.db"),
+            pretend.call("warehouse.tasks"),
+            pretend.call("warehouse.static"),
+            pretend.call("warehouse.search"),
+            pretend.call("warehouse.aws"),
+            pretend.call("warehouse.b2"),
+            pretend.call("warehouse.gcloud"),
+            pretend.call("warehouse.sessions"),
+            pretend.call("warehouse.cache.http"),
+            pretend.call("warehouse.cache.origin"),
+            pretend.call("warehouse.cache"),
+            pretend.call("warehouse.email"),
+            pretend.call("warehouse.accounts"),
+            pretend.call("warehouse.macaroons"),
+            pretend.call("warehouse.oidc"),
+            pretend.call("warehouse.attestations"),
+            pretend.call("warehouse.manage"),
+            pretend.call("warehouse.organizations"),
+            pretend.call("warehouse.subscriptions"),
+            pretend.call("warehouse.packaging"),
+            pretend.call("warehouse.redirects"),
             pretend.call("pyramid_redirect"),
-            pretend.call(".routes"),
-            pretend.call(".sponsors"),
-            pretend.call(".banners"),
-            pretend.call(".admin"),
-            pretend.call(".forklift"),
-            pretend.call(".api.config"),
-            pretend.call(".utils.wsgi"),
-            pretend.call(".sentry"),
-            pretend.call(".csp"),
-            pretend.call(".referrer_policy"),
-            pretend.call(".captcha"),
-            pretend.call(".helpdesk"),
-            pretend.call(".http"),
-            pretend.call(".utils.row_counter"),
+            pretend.call("warehouse.routes"),
+            pretend.call("warehouse.sponsors"),
+            pretend.call("warehouse.banners"),
+            pretend.call("warehouse.admin"),
+            pretend.call("warehouse.forklift"),
+            pretend.call("warehouse.api.config"),
+            pretend.call("warehouse.utils.wsgi"),
+            pretend.call("warehouse.sentry"),
+            pretend.call("warehouse.csp"),
+            pretend.call("warehouse.referrer_policy"),
+            pretend.call("warehouse.captcha"),
+            pretend.call("warehouse.helpdesk"),
+            pretend.call("warehouse.http"),
+            pretend.call("warehouse.utils.row_counter"),
         ]
         + [pretend.call(x) for x in [configurator_settings.get("warehouse.theme")] if x]
-        + [pretend.call(".sanity")]
+        + [pretend.call("warehouse.sanity")]
     )
     assert configurator_obj.add_jinja2_renderer.calls == [
         pretend.call(".html"),
@@ -467,7 +471,7 @@ def test_configure(monkeypatch, settings, environment):
         pretend.call(
             {
                 "tm.manager_hook": mock.ANY,
-                "tm.activate_hook": config.activate_hook,
+                "tm.activate_hook": pyramid_config.activate_hook,
                 "tm.annotate_user": False,
             }
         ),
@@ -477,7 +481,7 @@ def test_configure(monkeypatch, settings, environment):
     add_settings_dict = configurator_obj.add_settings.calls[5].args[0]
     assert add_settings_dict["tm.manager_hook"](pretend.stub()) is transaction_manager
     assert configurator_obj.add_tween.calls == [
-        pretend.call("warehouse.config.require_https_tween_factory"),
+        pretend.call("warehouse.config.pyramid.require_https_tween_factory"),
         pretend.call(
             "warehouse.utils.compression.compression_tween_factory",
             over=[
@@ -506,10 +510,13 @@ def test_configure(monkeypatch, settings, environment):
         pretend.call("warehouse:static/dist/manifest.json", prefix="/static/")
     ]
     assert configurator_obj.add_directive.calls == [
-        pretend.call("add_template_view", config.template_view, action_wrap=False)
+        pretend.call(
+            "add_template_view", pyramid_config.template_view, action_wrap=False
+        )
     ]
     assert configurator_obj.scan.calls == [
         pretend.call(
+            package="warehouse",
             categories=(
                 "pyramid",
                 "warehouse",
@@ -524,7 +531,7 @@ def test_configure(monkeypatch, settings, environment):
     ]
     assert configurator_obj.add_view_deriver.calls == [
         pretend.call(
-            config.reject_duplicate_post_keys_view,
+            pyramid_config.reject_duplicate_post_keys_view,
             over="rendered_view",
             under="decorated_view",
         )
@@ -541,7 +548,7 @@ def test_configure(monkeypatch, settings, environment):
 
 
 def test_root_factory_access_control_list():
-    acl = config.RootFactory.__acl__
+    acl = pyramid_config.RootFactory.__acl__
 
     assert acl == [
         (

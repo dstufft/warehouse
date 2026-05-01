@@ -24,14 +24,10 @@ from pyramid.tweens import EXCVIEW
 from pyramid_rpc.xmlrpc import XMLRPCRenderer
 
 from warehouse.authnz import Permissions
+from warehouse.config import Environment
 from warehouse.constants import MAX_FILESIZE, MAX_PROJECT_SIZE, ONE_GIB, ONE_MIB
 from warehouse.utils.static import ManifestCacheBuster
 from warehouse.utils.wsgi import ProxyFixer, VhmRootRemover
-
-
-class Environment(enum.StrEnum):
-    production = "production"
-    development = "development"
 
 
 class Configurator(_Configurator):
@@ -645,26 +641,26 @@ def configure(settings=None):
     config.include("pyramid_services")
 
     # Register metrics
-    config.include(".metrics")
+    config.include("warehouse.metrics")
 
     # Register our CSRF support. We do this here, immediately after we've
     # created the Configurator instance so that we ensure to get our defaults
     # set ASAP before anything else has a chance to set them and possibly call
     # Configurator().commit()
-    config.include(".csrf")
+    config.include("warehouse.csrf")
 
     # Include anything needed by the development environment.
     if config.registry.settings["warehouse.env"] == Environment.development:
         config.include("pyramid_debugtoolbar")
 
     # Register our logging support
-    config.include(".logging")
+    config.include("warehouse.logging")
 
     # We'll want to use Jinja2 as our template system.
     config.include("pyramid_jinja2")
 
     # Include our filters
-    config.include(".filters")
+    config.include("warehouse.filters")
 
     # Including pyramid_mailer for sending emails through SMTP.
     config.include("pyramid_mailer")
@@ -782,13 +778,13 @@ def configure(settings=None):
     config.include("pyramid_tm")
 
     # Register support for our rate limiting mechanisms
-    config.include(".rate_limiting")
+    config.include("warehouse.rate_limiting")
 
     # Register our XMLRPC service
-    config.include(".legacy.api.xmlrpc")
+    config.include("warehouse.legacy.api.xmlrpc")
 
     # Register our XMLRPC cache
-    config.include(".legacy.api.xmlrpc.cache")
+    config.include("warehouse.legacy.api.xmlrpc.cache")
 
     # Register support for XMLRPC and override it's renderer to allow
     # specifying custom dumps arguments.
@@ -796,91 +792,91 @@ def configure(settings=None):
     config.add_renderer("xmlrpc", XMLRPCRenderer(allow_none=True))
 
     # Register support for our legacy action URLs
-    config.include(".legacy.action_routing")
+    config.include("warehouse.legacy.action_routing")
 
     # Register support for our custom predicates
-    config.include(".predicates")
+    config.include("warehouse.predicates")
 
     # Register support for template views.
     config.add_directive("add_template_view", template_view, action_wrap=False)
 
     # Register support for internationalization and localization
-    config.include(".i18n")
+    config.include("warehouse.i18n")
 
     # Register the configuration for the PostgreSQL database.
-    config.include(".db")
+    config.include("warehouse.db")
 
     # Register the support for Celery Tasks
-    config.include(".tasks")
+    config.include("warehouse.tasks")
 
-    config.include(".static")
+    config.include("warehouse.static")
 
-    config.include(".search")
+    config.include("warehouse.search")
 
     # Register the support for AWS, Backblaze,and Google Cloud
-    config.include(".aws")
-    config.include(".b2")
-    config.include(".gcloud")
+    config.include("warehouse.aws")
+    config.include("warehouse.b2")
+    config.include("warehouse.gcloud")
 
     # Register our session support
-    config.include(".sessions")
+    config.include("warehouse.sessions")
 
     # Register our support for http and origin caching
-    config.include(".cache.http")
-    config.include(".cache.origin")
+    config.include("warehouse.cache.http")
+    config.include("warehouse.cache.origin")
     # Register our support for the database results cache
-    config.include(".cache")
+    config.include("warehouse.cache")
 
     # Register support for sending emails
-    config.include(".email")
+    config.include("warehouse.email")
 
     # Register our authentication support.
-    config.include(".accounts")
+    config.include("warehouse.accounts")
 
     # Register support for Macaroon based authentication
-    config.include(".macaroons")
+    config.include("warehouse.macaroons")
 
     # Register support for OIDC based authentication
-    config.include(".oidc")
+    config.include("warehouse.oidc")
 
     # Register support for attestations
-    config.include(".attestations")
+    config.include("warehouse.attestations")
 
     # Register logged-in views
-    config.include(".manage")
+    config.include("warehouse.manage")
 
     # Register our organization support.
-    config.include(".organizations")
+    config.include("warehouse.organizations")
 
     # Register our subscription support.
-    config.include(".subscriptions")
+    config.include("warehouse.subscriptions")
 
     # Allow the packaging app to register any services it has.
-    config.include(".packaging")
+    config.include("warehouse.packaging")
 
     # Configure redirection support
-    config.include(".redirects")  # internal
+    config.include("warehouse.redirects")  # internal
     config.include("pyramid_redirect")  # external
     config.add_settings({"pyramid_redirect.structlog": True})
 
     # Register all our URL routes for Warehouse.
-    config.include(".routes")
+    config.include("warehouse.routes")
 
     # Allow the sponsors app to list sponsors
-    config.include(".sponsors")
+    config.include("warehouse.sponsors")
 
     # Allow the banners app to list banners
-    config.include(".banners")
+    config.include("warehouse.banners")
 
     # Include our admin application
-    config.include(".admin")
+    config.include("warehouse.admin")
 
     # Register forklift, at least until we split it out into it's own project.
-    config.include(".forklift")
+    config.include("warehouse.forklift")
 
     # Block non HTTPS requests for the legacy ?:action= routes when they are
     # sent via POST.
-    config.add_tween("warehouse.config.require_https_tween_factory")
+    config.add_tween("warehouse.config.pyramid.require_https_tween_factory")
 
     # Enable compression of our HTTP responses
     config.add_tween(
@@ -924,7 +920,7 @@ def configure(settings=None):
     )
 
     # Set up API configuration
-    config.include(".api.config")
+    config.include("warehouse.api.config")
 
     # Enable support of passing certain values like remote host, client
     # address, and protocol support in from an outer proxy to the application.
@@ -939,33 +935,34 @@ def configure(settings=None):
     config.add_wsgi_middleware(VhmRootRemover)
 
     # Add our extensions to Request
-    config.include(".utils.wsgi")
+    config.include("warehouse.utils.wsgi")
 
     # Initialize Sentry for exception capture. PyramidIntegration wraps
     # Pyramid's Router with SentryWsgiMiddleware internally, so include
     # order here no longer affects WSGI middleware nesting.
-    config.include(".sentry")
+    config.include("warehouse.sentry")
 
     # Register Content-Security-Policy service
-    config.include(".csp")
+    config.include("warehouse.csp")
 
     # Register Referrer-Policy service
-    config.include(".referrer_policy")
+    config.include("warehouse.referrer_policy")
 
     # Register Captcha service
-    config.include(".captcha")
+    config.include("warehouse.captcha")
 
     # Register HelpDesk service
-    config.include(".helpdesk")
+    config.include("warehouse.helpdesk")
 
     config.add_settings({"http": {"verify": "/etc/ssl/certs/"}})
-    config.include(".http")
+    config.include("warehouse.http")
 
     # Register our row counting maintenance
-    config.include(".utils.row_counter")
+    config.include("warehouse.utils.row_counter")
 
     # Scan everything for configuration
     config.scan(
+        package="warehouse",
         categories=(
             "pyramid",
             "warehouse",
@@ -976,7 +973,7 @@ def configure(settings=None):
     # Sanity check our request and responses.
     # Note: It is very important that this go last. We need everything else
     # that might have added a tween to be registered prior to this.
-    config.include(".sanity")
+    config.include("warehouse.sanity")
 
     # Finally, commit all of our changes
     config.commit()

@@ -25,7 +25,7 @@ if typing.TYPE_CHECKING:
     from pyramid.request import Request
     from sqlalchemy.orm import Session as SA_Session
 
-    from warehouse.config import Configurator
+    from warehouse.config.pyramid import Configurator
     from warehouse.tasks import WarehouseTask
 
 

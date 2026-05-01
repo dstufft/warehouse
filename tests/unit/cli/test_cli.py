@@ -4,13 +4,13 @@ import click
 import pretend
 
 import warehouse.cli
-import warehouse.config
+import warehouse.config.pyramid
 
 
 def test_lazy_config_delays(monkeypatch):
     config = pretend.stub(foo="bar", another="thing")
     configure = pretend.call_recorder(lambda a, settings: config)
-    monkeypatch.setattr(warehouse.config, "configure", configure)
+    monkeypatch.setattr(warehouse.config.pyramid, "configure", configure)
 
     lconfig = warehouse.cli.LazyConfig("thing", settings={"lol": "wat"})
 

@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
 
-from warehouse.config import configure
+from warehouse.config.pyramid import configure
 
 app = configure().make_celery_app()

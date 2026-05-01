@@ -33,8 +33,9 @@ from pytest_postgresql.janitor import DatabaseJanitor
 from sqlalchemy import event
 
 import warehouse
+import warehouse.config.pyramid
 
-from warehouse import admin, config, static
+from warehouse import admin, static
 from warehouse.accounts import services as account_services
 from warehouse.accounts.interfaces import (
     IDomainStatusService,
@@ -360,11 +361,13 @@ def get_app_config(database, nondefaults=None):
         settings.update(nondefaults)
 
     with (
-        mock.patch.object(config, "ManifestCacheBuster", MockManifestCacheBuster),
+        mock.patch.object(
+            warehouse.config.pyramid, "ManifestCacheBuster", MockManifestCacheBuster
+        ),
         mock.patch("warehouse.admin.ManifestCacheBuster", MockManifestCacheBuster),
         mock.patch.object(static, "whitenoise_add_manifest"),
     ):
-        cfg = config.configure(settings=settings)
+        cfg = warehouse.config.pyramid.configure(settings=settings)
 
     # Run migrations:
     # This might harmlessly run multiple times if there are several app config fixtures
