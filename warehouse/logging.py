@@ -6,6 +6,10 @@ import uuid
 
 import structlog
 
+from pyramid.config import Configurator
+
+from warehouse import config
+
 request_logger = structlog.get_logger("warehouse.request")
 
 RENDERER = structlog.processors.JSONRenderer()
@@ -42,7 +46,9 @@ def _create_logger(request):
     return request_logger.bind(**{"request.id": request.id})
 
 
-def includeme(config):
+def includeme(configurator: Configurator):
+    cfg = config.get(configurator)
+
     # Configure the standard library logging
     logging.config.dictConfig(
         {
@@ -61,21 +67,21 @@ def includeme(config):
                 "gunicorn": {
                     "propagate": False,
                     "handlers": ["primary"],
-                    "level": config.registry.settings.get("logging.level", "INFO"),
+                    "level": cfg.logging.level,
                 },
                 "gunicorn.access": {
                     "propagate": False,
                     "handlers": ["primary"],
-                    "level": config.registry.settings.get("logging.level", "INFO"),
+                    "level": cfg.logging.level,
                 },
                 "gunicorn.server": {
                     "propagate": False,
                     "handlers": ["primary"],
-                    "level": config.registry.settings.get("logging.level", "INFO"),
+                    "level": cfg.logging.level,
                 },
             },
             "root": {
-                "level": config.registry.settings.get("logging.level", "INFO"),
+                "level": cfg.logging.level,
                 "handlers": ["primary"],
             },
         }
@@ -98,7 +104,7 @@ def includeme(config):
     )
 
     # Give every request a unique identifier
-    config.add_request_method(_create_id, name="id", reify=True)
+    configurator.add_request_method(_create_id, name="id", reify=True)
 
     # Add a log method to every request.
-    config.add_request_method(_create_logger, name="log", reify=True)
+    configurator.add_request_method(_create_logger, name="log", reify=True)

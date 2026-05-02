@@ -1,7 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import base64
-import enum
 import functools
 import json
 import os
@@ -24,7 +23,7 @@ from pyramid.tweens import EXCVIEW
 from pyramid_rpc.xmlrpc import XMLRPCRenderer
 
 from warehouse.authnz import Permissions
-from warehouse.config import Environment
+from warehouse.config import Configuration, Environment, with_config
 from warehouse.constants import MAX_FILESIZE, MAX_PROJECT_SIZE, ONE_GIB, ONE_MIB
 from warehouse.utils.static import ManifestCacheBuster
 from warehouse.utils.wsgi import ProxyFixer, VhmRootRemover
@@ -309,9 +308,6 @@ def configure(settings=None):
     settings["warehouse.forklift.legacy.MAX_PROJECT_SIZE_GIB"] = (
         MAX_PROJECT_SIZE / ONE_GIB
     )
-
-    # Allow configuring the log level. See `warehouse/logging.py` for more
-    maybe_set(settings, "logging.level", "LOG_LEVEL")
 
     # Add information about the current copy of the code.
     maybe_set(settings, "warehouse.commit", "SOURCE_COMMIT", default="null")
@@ -634,7 +630,9 @@ def configure(settings=None):
 
     # Actually setup our Pyramid Configurator with the values pulled in from
     # the environment as well as the ones passed in to the configure function.
-    config = Configurator(settings=settings)
+    # TODO: Allow passing in a config, and gate loading it on if one was not
+    #       passed in.
+    config = with_config(Configurator(settings=settings), Configuration.load())
     config.set_root_factory(RootFactory)
 
     # Register support for services

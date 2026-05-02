@@ -13,6 +13,7 @@ import pytest
 import structlog
 
 from warehouse import logging as wlogging
+from warehouse.config import Configuration, Logging, LogLevel, with_config
 
 
 class TestStructlogFormatter:
@@ -59,22 +60,26 @@ def test_create_logging(monkeypatch):
 
 
 @pytest.mark.parametrize(
-    ("settings", "expected_level"),
-    [({"logging.level": "DEBUG"}, "DEBUG"), ({}, "INFO")],
+    ("config", "expected_level"),
+    [
+        (Configuration(), "INFO"),
+        (Configuration(logging=Logging(level=LogLevel.Debug)), "DEBUG"),
+    ],
 )
-def test_includeme(monkeypatch, settings, expected_level):
+def test_includeme(monkeypatch, config, expected_level):
     dict_config = pretend.call_recorder(lambda c: None)
     monkeypatch.setattr(logging.config, "dictConfig", dict_config)
 
     configure = pretend.call_recorder(lambda **kw: None)
     monkeypatch.setattr(structlog, "configure", configure)
 
-    config = pretend.stub(
-        registry=pretend.stub(settings=settings),
+    configurator = pretend.stub(
+        registry={},
         add_request_method=pretend.call_recorder(lambda fn, name, reify: None),
     )
+    configurator = with_config(configurator, config)
 
-    wlogging.includeme(config)
+    wlogging.includeme(configurator)
 
     assert dict_config.calls == [
         pretend.call(
@@ -140,7 +145,7 @@ def test_includeme(monkeypatch, settings, expected_level):
     assert isinstance(
         configure.calls[0].kwargs["logger_factory"], structlog.stdlib.LoggerFactory
     )
-    assert config.add_request_method.calls == [
+    assert configurator.add_request_method.calls == [
         pretend.call(wlogging._create_id, name="id", reify=True),
         pretend.call(wlogging._create_logger, name="log", reify=True),
     ]

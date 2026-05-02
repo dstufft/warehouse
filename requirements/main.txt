@@ -575,6 +575,10 @@ cssutils==2.11.1 \
     --hash=sha256:0563a76513b6af6eebbe788c3bf3d01c920e46b3f90c8416738c5cfc773ff8e2 \
     --hash=sha256:a67bfdfdff4f3867fab43698ec4897c1a828eca5973f4073321b3bccaf1199b1
     # via premailer
+dataclass-settings==0.7.0 \
+    --hash=sha256:186941b0a4041f6f359670fe181df5bb6b9573c77f4606eb61afb49845c4eb82 \
+    --hash=sha256:87736307cc84c010f0227144679b362ddb2b7a9ed052de91bf4f3e0313c4afbd
+    # via -r requirements/main.in
 datadog==0.52.1 \
     --hash=sha256:44c6deb563c4522dba206fba2e2bb93d3b04113c40191851ba3a241d82b5fd0b \
     --hash=sha256:b8c92cd761618ee062f114171067e4c400d48c9f0dad16cb285042439d9d5d4e
@@ -2361,12 +2365,17 @@ tuf==6.0.0 \
     --hash=sha256:458f663a233d95cc76dde0e1a3d01796516a05ce2781fefafebe037f7729601a \
     --hash=sha256:9eed0f7888c5fff45dc62164ff243a05d47fb8a3208035eb268974287e0aee8d
     # via sigstore
+type-lens==0.2.6 \
+    --hash=sha256:5d46ab3bc2dfafc174cad702eccb4418c31e38e258e87945a19d86ebc204d08b \
+    --hash=sha256:aade6beb3eca337c90d1b627b509768473bbd591e233ed6b57fb93ec2a01bca6
+    # via dataclass-settings
 typing-extensions==4.15.0 \
     --hash=sha256:0cea48d173cc12fa28ecabc3b837ea3cf6f38c6d1136f85cbaaf598984861466 \
     --hash=sha256:f0fa19c6845758ab08074a0cfa8b7aecb71c999ca73d62883bc25cc018c4e548
     # via
     #   alembic
     #   cattrs
+    #   dataclass-settings
     #   grpcio
     #   limits
     #   openapi-core
@@ -2375,6 +2384,7 @@ typing-extensions==4.15.0 \
     #   sigstore-models
     #   sqlalchemy
     #   stripe
+    #   type-lens
     #   typing-inspection
 typing-inspection==0.4.2 \
     --hash=sha256:4ed1cacbdc298c220f1bd249ed5287caa16f34d44ef4e9c3d0cbad5b521545e7 \
