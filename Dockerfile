@@ -227,9 +227,9 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 # Warehouse itself require the least amount of layers being invalidated from
 # the cache. This is most important in development, but it also useful for
 # deploying new code changes.
-COPY --from=static /opt/warehouse/src/warehouse/static/dist/ /opt/warehouse/src/warehouse/static/dist/
-COPY --from=static /opt/warehouse/src/warehouse/admin/static/dist/ /opt/warehouse/src/warehouse/admin/static/dist/
-COPY --from=build /opt/warehouse/ /opt/warehouse/
+COPY --link --from=static /opt/warehouse/src/warehouse/static/dist/ /opt/warehouse/src/warehouse/static/dist/
+COPY --link --from=static /opt/warehouse/src/warehouse/admin/static/dist/ /opt/warehouse/src/warehouse/admin/static/dist/
+COPY --link --from=build /opt/warehouse/ /opt/warehouse/
 COPY . /opt/warehouse/src/
 
 # Pre-cache TLD list
