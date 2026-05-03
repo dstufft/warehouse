@@ -179,6 +179,11 @@ ARG DEVEL=no
 # as well for the matrix!
 ARG CI=no
 
+# Before we do anything else, we'll compile the *.pyc files for the stdlib, this will
+# only change if the base image itself changes, so we want this to happen as early as
+# possible.
+RUN python -m compileall /usr/local/lib/ -j 0
+
 # By default, Docker has special steps to avoid keeping APT caches in the layers, which
 # is good, but in our case, we're going to mount a special cache volume (kept between
 # builds), so we WANT the cache to persist.
@@ -209,13 +214,18 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 # Warehouse itself require the least amount of layers being invalidated from
 # the cache. This is most important in development, but it also useful for
 # deploying new code changes.
+COPY gunicorn-*.conf.py /opt/warehouse/src/
 COPY --from=static /opt/warehouse/src/warehouse/static/dist/ /opt/warehouse/src/warehouse/static/dist/
 COPY --from=static /opt/warehouse/src/warehouse/admin/static/dist/ /opt/warehouse/src/warehouse/admin/static/dist/
 COPY --from=build /opt/warehouse/ /opt/warehouse/
-COPY . /opt/warehouse/src/
+COPY ./warehouse /opt/warehouse/src/warehouse
+
+# Set our working directory to our src directory
+WORKDIR /opt/warehouse/src/
+
+# Load our module to pre-compile as much bytecode as we can easily.
+# Saves time collectively on container boot!
+RUN python -m compileall warehouse -j 0
 
 # Pre-cache TLD list
 RUN tldextract --update
-# Load our module to pre-compile as much bytecode as we can easily.
-# Saves time collectively on container boot!
-RUN python -m warehouse db -h
