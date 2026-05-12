@@ -2022,9 +2022,9 @@ referencing==0.36.2 \
     #   jsonschema
     #   jsonschema-path
     #   jsonschema-specifications
-repoze-sendmail==4.4.1 \
-    --hash=sha256:7a8ea37914a5d38bad38052a83eac1d867b171ff4cc8b4d4994e892c05b0d424 \
-    --hash=sha256:f1396893d3aa43502624e88941a441233c06679ae50b1966ffbfccba05da6347
+repoze-sendmail==4.5 \
+    --hash=sha256:ce44bb4ba6a85c009002a225ec6b954c43c78cbb8c1344fafbcc7e8aa2cbcc98 \
+    --hash=sha256:f9fc0ae01d70a9c596080fddc84aa959352ab1ec42fcd5811b33aa54b1725706
     # via pyramid-mailer
 requests==2.33.1 \
     --hash=sha256:18817f8c57c6263968bc123d237e3b8b08ac046f5456bd1e307ee8f4250d3517 \
@@ -2347,7 +2347,6 @@ transaction==5.1 \
     #   -r requirements/main.in
     #   pyramid-mailer
     #   pyramid-tm
-    #   repoze-sendmail
     #   zope-sqlalchemy
 translationstring==1.4 \
     --hash=sha256:5f4dc4d939573db851c8d840551e1a0fb27b946afe3b95aafc22577eed2d6262 \
@@ -2599,7 +2598,6 @@ zope-interface==8.3 \
     #   pyramid
     #   pyramid-retry
     #   pyramid-services
-    #   repoze-sendmail
     #   transaction
     #   wired
     #   zope-sqlalchemy
@@ -2618,5 +2616,4 @@ setuptools==80.10.2 \
     --hash=sha256:95b30ddfb717250edb492926c92b5221f7ef3fbcc2b07579bcd4a27da21d0173
     # via
     #   pyramid
-    #   repoze-sendmail
     #   zope-deprecation
