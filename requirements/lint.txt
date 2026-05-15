@@ -854,9 +854,9 @@ types-webencodings==0.5.0.20260408 \
     --hash=sha256:19a2afe5c22d9b1e880b49ff823c7b531f473a390fe47ac903c0bdb5cd677dd9 \
     --hash=sha256:28c596619f367e43eee393d85f63e8d2fdb6874c654a8d441c37f8afe29c6d0d
     # via types-html5lib
-types-webob==1.8.0.20260408 \
-    --hash=sha256:062d0bd92f414c6dec411c8c7615234022fa8b7bab8b7c54da0c98f1d9d93764 \
-    --hash=sha256:f9f0fca4df65150c8e24d292a6343c65d6fab219c23648bc98dda7006a232ad4
+types-webob==1.8.0.20260508 \
+    --hash=sha256:1c3914f3684191916decdd80e3163efcbd94edfc37b0a7dd7eb55de3d7b3e179 \
+    --hash=sha256:4a07560179dd689ca9ed18c707419bba302317902a1a1fcaa8479f3f00f9b86e
     # via -r requirements/lint.in
 types-wtforms==3.2.1.20260408 \
     --hash=sha256:41597de1b5e028f9852972f48440ef37d5cb0c91a6790f09bdeac8c9b578aa9a \
