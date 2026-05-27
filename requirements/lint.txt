@@ -512,9 +512,9 @@ mypy-extensions==1.1.0 \
     --hash=sha256:1be4cccdb0f2482337c4743e60421de3a356cd97508abadd57d47403e94f5505 \
     --hash=sha256:52e68efc3284861e772bbcd66823fde5ae21fd2fdb51c62a211403730b916558
     # via mypy
-mypy-zope==1.0.14 \
-    --hash=sha256:42555ad4703f2e50c912de3ebe0c7197619c3f71864817fabc5385ecea0f8449 \
-    --hash=sha256:8842ade93630421dbec0c9906d6515f6e65c6407ef8b9b2eb7f4f73ae1e8a42a
+mypy-zope==1.0.15 \
+    --hash=sha256:0f71f63fd69caf6ad006d713e4dbbbaef496cb084e347a6553f7c564c71f9bcb \
+    --hash=sha256:709376a2820836294cfd6dbe0dc5945231e57cbd3fcf59dce140fc9ce5297dc2
     # via -r requirements/lint.in
 pathspec==1.0.4 \
     --hash=sha256:0210e2ae8a21a9137c0d470578cb0e595af87edaa6ebf12ff176f14a02e0e645 \
