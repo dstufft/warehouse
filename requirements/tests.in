@@ -11,5 +11,5 @@ pytest-socket
 pytest-sugar
 pytest-xdist
 pytz
-responses>=0.5.1
+responses>=0.26.1
 webtest
