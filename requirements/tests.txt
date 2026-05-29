@@ -354,9 +354,9 @@ pytest-randomly==4.0.1 \
     --hash=sha256:174e57bb12ac2c26f3578188490bd333f0e80620c3f47340158a86eca0593cd8 \
     --hash=sha256:e0dfad2fd4f35e07beff1e47c17fbafcf98f9bf4531fd369d9260e2f858bfcb7
     # via -r requirements/tests.in
-pytest-socket==0.7.0 \
-    --hash=sha256:71ab048cbbcb085c15a4423b73b619a8b35d6a307f46f78ea46be51b1b7e11b3 \
-    --hash=sha256:7e0f4642177d55d317bbd58fc68c6bd9048d6eadb2d46a89307fa9221336ce45
+pytest-socket==0.8.0 \
+    --hash=sha256:81821ba59f07d7600fe2b551d8714f40b068bd46e8b6704c48664e9d60cdacb8 \
+    --hash=sha256:af9bb5f487da72be63573a6194cfac033b6c7a1c1561e150521105970f9e99f2
     # via -r requirements/tests.in
 pytest-sugar==1.1.1 \
     --hash=sha256:2f8319b907548d5b9d03a171515c1d43d2e38e32bd8182a1781eb20b43344cc8 \
