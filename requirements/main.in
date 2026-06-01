@@ -64,7 +64,7 @@ redis>=2.8.0,<7.0.0
 rfc3986
 sentry-sdk
 pypi-attestations==0.0.29
-sqlalchemy[asyncio]>=2.0,<3.0
+sqlalchemy[asyncio]>=2.0.50,<3.0
 stdlib-list
 stripe
 structlog
